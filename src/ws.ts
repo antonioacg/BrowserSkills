@@ -5,6 +5,7 @@ import {
   getPortOwner,
   isOwnedByThisServer,
   isPortInUse,
+  isProcessAlive,
   killPid,
 } from "@/utils/port";
 
@@ -42,8 +43,17 @@ async function reclaimPort(port: number): Promise<void> {
     process.exit(1);
   }
 
+  if (isProcessAlive(owner.ppid)) {
+    process.stderr.write(
+      `browsermcp: port ${port} is held by BrowserSkills PID ${owner.pid} ` +
+        `with live parent PID ${owner.ppid} — another MCP client is using it. ` +
+        `Refusing to reclaim. Only one bridge instance can run at a time.\n`,
+    );
+    process.exit(1);
+  }
+
   process.stderr.write(
-    `browsermcp: reclaiming port ${port} from stale BrowserSkills PID ${owner.pid}\n`,
+    `browsermcp: reclaiming port ${port} from orphaned BrowserSkills PID ${owner.pid} (parent ${owner.ppid} is gone)\n`,
   );
   killPid(owner.pid, "SIGTERM");
   if (await waitForPortFree(port, 1500)) return;

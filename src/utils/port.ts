@@ -16,6 +16,7 @@ export async function isPortInUse(port: number): Promise<boolean> {
 export interface PortOwner {
   pid: number;
   command: string;
+  ppid: number;
 }
 
 export function getPortOwner(port: number): PortOwner | null {
@@ -27,13 +28,27 @@ export function getPortOwner(port: number): PortOwner | null {
     if (!pidsRaw) return null;
     const pid = Number(pidsRaw.split("\n")[0]);
     if (!Number.isFinite(pid)) return null;
-    const command = execFileSync("ps", ["-p", String(pid), "-o", "command="], {
+    const psOutput = execFileSync("ps", ["-p", String(pid), "-o", "ppid=,command="], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
-    return { pid, command };
+    const match = psOutput.match(/^\s*(\d+)\s+(.*)$/);
+    if (!match) return null;
+    const ppid = Number(match[1]);
+    const command = match[2].trim();
+    return { pid, command, ppid };
   } catch {
     return null;
+  }
+}
+
+export function isProcessAlive(pid: number): boolean {
+  if (!Number.isFinite(pid) || pid <= 1) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
   }
 }
 
