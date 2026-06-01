@@ -86,8 +86,15 @@ export async function createServerWithTools(options: Options): Promise<Server> {
   const originalClose = server.close.bind(server);
   server.close = async () => {
     await originalClose();
-    wss.close();
-    httpServer.close();
+    for (const client of wss.clients) {
+      try {
+        client.terminate();
+      } catch {
+        // best-effort
+      }
+    }
+    await new Promise<void>((resolve) => wss.close(() => resolve()));
+    await new Promise<void>((resolve) => httpServer.close(() => resolve()));
     await context.close();
   };
 
