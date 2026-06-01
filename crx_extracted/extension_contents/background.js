@@ -44745,29 +44745,6 @@ ${C6}
       ),
     ),
     Vj = { name: "Browser MCP" };
-  mn.sentry.enabled && Kj();
-  function Kj() {
-    const t = Vj.name.toLocaleLowerCase().replace(/\s+/g, "-"),
-      e = chrome.runtime.getManifest().version,
-      n = `${t}@${e}`;
-    PS({
-      dsn: mn.sentry.dsn,
-      release: n,
-      environment: Dd,
-      ignoreErrors: [
-        "An unexpected error occurred",
-        "can't access dead object",
-        "Extension context invalidated",
-        "Network Error",
-        "Failed to get document because the client is offline.",
-      ],
-      beforeSend: async (r) => {
-        var s;
-        const i = !!((s = r.extra) != null && s.componentStack);
-        return dT() && !i ? null : r;
-      },
-    });
-  }
   function yC(t) {
     try {
       return new URL(t);
