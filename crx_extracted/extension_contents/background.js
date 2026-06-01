@@ -45005,7 +45005,10 @@ ${C6}
       defaultWsPort: 9009,
       errors: { noConnectedTab: "No tab is connected" },
     },
-    pd = Ss.defineItem("local:selectedTabId", { fallback: null });
+    pd = Ss.defineItem("local:selectedTabId", { fallback: null }),
+    lastDcReason = Ss.defineItem("local:lastDisconnectReason", {
+      fallback: null,
+    });
   async function gd() {
     const t = await pd.getValue();
     if (!t) throw new Error("No selected tab ID");
@@ -47731,6 +47734,7 @@ License: MIT
     const e = setInterval(async () => {
       let n = await pd.getValue();
       if (n && !(await xC(n))) {
+        lastDcReason.setValue("tab_closed");
         pd.setValue(null);
         n = null;
       }
@@ -47757,7 +47761,9 @@ License: MIT
   }
   function Nq({ ws: t, selectedTabId: e, onClose: n }) {
     const r = async () => {
-        (console.log("WebSocket opened"), e && (await PC(e)));
+        (console.log("WebSocket opened"),
+          lastDcReason.setValue(null),
+          e && (await PC(e)));
       },
       i = (f) => {
         console.error("WebSocket error:", f);

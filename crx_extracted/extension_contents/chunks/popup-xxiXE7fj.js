@@ -62653,6 +62653,31 @@ function Jue({ children: t }) {
   });
 }
 const ece = wl.defineItem("local:selectedTabId", { fallback: null });
+const lastDcReasonItem = wl.defineItem("local:lastDisconnectReason", {
+  fallback: null,
+});
+function DisconnectNotice() {
+  const [reason, setReason] = vh(lastDcReasonItem);
+  if (!reason) return null;
+  const message =
+    reason === "tab_closed"
+      ? "The previously connected tab was closed. Connect a new tab to continue."
+      : "Previous connection was lost.";
+  return le.jsxs(Kue, {
+    variant: "default",
+    className: "relative pr-8",
+    children: [
+      le.jsx(Xue, { children: "Disconnected" }),
+      le.jsx(Zue, { children: message }),
+      le.jsx(as, {
+        variant: "ghost",
+        className: "absolute right-1 top-1 size-6 p-0",
+        onClick: () => setReason(null),
+        children: "\u00d7",
+      }),
+    ],
+  });
+}
 function tce() {
   const [t, e] = j.useState(null);
   return (
@@ -62672,7 +62697,11 @@ function nce() {
   const [t, e] = j.useState(null);
   return le.jsxs("div", {
     className: "flex flex-col gap-4",
-    children: [t && le.jsx(Jue, { children: t }), le.jsx(rce, { setError: e })],
+    children: [
+      t && le.jsx(Jue, { children: t }),
+      le.jsx(DisconnectNotice, {}),
+      le.jsx(rce, { setError: e }),
+    ],
   });
 }
 function rce({ setError: t }) {
