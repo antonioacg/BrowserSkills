@@ -47730,8 +47730,17 @@ License: MIT
     let t = null;
     const e = setInterval(async () => {
       let n = await pd.getValue();
-      if ((n && !(await xC(n)) && (pd.setValue(null), (n = null)), t || !n))
+      if (n && !(await xC(n))) {
+        pd.setValue(null);
+        n = null;
+      }
+      if (!n && t) {
+        try {
+          t.close();
+        } catch {}
         return;
+      }
+      if (t || !n) return;
       const r = RC.defaultWsPort;
       t = new WebSocket(`ws://localhost:${r}`);
       const i = Nq({
