@@ -5,124 +5,124 @@ description: "Browser automation skill with 15 tools. Navigate, click, type, scr
 
 # Browser MCP Skill v1.0.0
 
-浏览器自动化技能，通过 Browser MCP Chrome 扩展控制真实浏览器。
+Browser automation skill — control a real browser through the Browser MCP Chrome extension.
 
-## 前置条件
+## Prerequisites
 
-1. MCP 服务器已运行：`node /path/to/mcp/dist/index.js`
-2. Browser MCP Chrome 扩展已安装并点击 **Connect** 连接
-3. MCP 工具前缀：`mcp__browsermcp__*`
+1. MCP server is running: `node /path/to/mcp/dist/index.js`
+2. Browser MCP Chrome extension is installed and connected (click **Connect**)
+3. MCP tool prefix: `mcp__browsermcp__*`
 
-## 工具总览（15个）
+## Tool Overview (15 tools)
 
-| 工具 | 说明 | 必填参数 |
-|------|------|----------|
-| `navigate` | 导航到 URL | `url` |
-| `go_back` | 浏览器后退 | — |
-| `go_forward` | 浏览器前进 | — |
-| `snapshot` | 获取页面 ARIA 快照 | — |
-| `click` | 点击元素 | `element`, `ref` |
-| `hover` | 悬停元素 | `element`, `ref` |
-| `type` | 输入文本 | `element`, `ref`, `text` |
-| `select_option` | 选择下拉选项 | `element`, `ref`, `values` |
-| `drag` | 拖拽元素 | `startElement`, `startRef`, `endElement`, `endRef` |
-| `scroll` | 滚动页面 | `x`, `y`, `deltaX`, `deltaY` |
-| `press_key` | 按键 | `key` |
-| `wait` | 等待 N 秒 | `time` |
-| `get_console_logs` | 获取控制台日志 | — |
-| `screenshot` | 截图（视窗内） | — |
-| `fullpage_screenshot` | 全页截图（含视窗外） | — |
+| Tool | Description | Required parameters |
+|------|-------------|---------------------|
+| `navigate` | Navigate to a URL | `url` |
+| `go_back` | Browser back | — |
+| `go_forward` | Browser forward | — |
+| `snapshot` | Get the page's ARIA snapshot | — |
+| `click` | Click an element | `element`, `ref` |
+| `hover` | Hover over an element | `element`, `ref` |
+| `type` | Type text | `element`, `ref`, `text` |
+| `select_option` | Select a dropdown option | `element`, `ref`, `values` |
+| `drag` | Drag an element | `startElement`, `startRef`, `endElement`, `endRef` |
+| `scroll` | Scroll the page | `x`, `y`, `deltaX`, `deltaY` |
+| `press_key` | Press a key | `key` |
+| `wait` | Wait N seconds | `time` |
+| `get_console_logs` | Get console logs | — |
+| `screenshot` | Screenshot (within viewport) | — |
+| `fullpage_screenshot` | Full-page screenshot (including off-viewport) | — |
 
-## 标准工作流
+## Standard Workflows
 
-### 1. 导航 + 快照
+### 1. Navigate + snapshot
 ```
 1. mcp__browsermcp__navigate {url}
-2. mcp__browsermcp__snapshot  → 获取 ref 引用
-3. 根据 ref 执行后续操作
+2. mcp__browsermcp__snapshot  → get ref references
+3. Perform subsequent actions based on the refs
 ```
 
-### 2. 表单填写
+### 2. Filling out a form
 ```
-1. navigate → snapshot → 找到 input ref
-2. click {ref}  → 激活输入框
-3. type {ref, text}  → 输入内容
-4. press_key "Enter" 或 click 提交按钮
+1. navigate → snapshot → find the input ref
+2. click {ref}  → activate the input field
+3. type {ref, text}  → enter content
+4. press_key "Enter" or click the submit button
 ```
 
-### 3. 页面截图存档
+### 3. Archiving a page screenshot
 ```
 1. navigate {url}
-2. wait {time: 2}  → 等待渲染
-3. fullpage_screenshot  → 保存至 /tmp/fullpage_*.jpg
+2. wait {time: 2}  → wait for rendering
+3. fullpage_screenshot  → save to /tmp/fullpage_*.jpg
 ```
 
-### 4. 数据抓取
+### 4. Data scraping
 ```
 1. navigate {url}
-2. snapshot  → 解析结构
-3. 多次 scroll {deltaY: 500} + snapshot  → 加载更多
-4. get_console_logs  → 检查网络/错误
+2. snapshot  → parse the structure
+3. Repeat scroll {deltaY: 500} + snapshot  → load more
+4. get_console_logs  → check network/errors
 ```
 
-### 5. 拖拽操作
+### 5. Drag and drop
 ```
-1. snapshot → 找到 startRef 和 endRef
+1. snapshot → find startRef and endRef
 2. drag {startElement, startRef, endElement, endRef}
 ```
 
-## 关键参数说明
+## Key Parameter Notes
 
-### ref 引用
-- 每次 `snapshot` 返回元素的 `ref`（如 `s1e12`）
-- ref 会随页面变化而更新，操作前需重新 snapshot
-- click/hover/type/drag 均依赖 ref
+### ref references
+- Each `snapshot` returns a `ref` for each element (e.g. `s1e12`)
+- refs update as the page changes — re-run snapshot before acting
+- click/hover/type/drag all depend on ref
 
-### scroll 参数
-- `x`, `y`：滚动起始坐标（视窗坐标）
-- `deltaX`, `deltaY`：滚动距离（正数向右/向下）
-- 滚动整页：`{x: 760, y: 400, deltaX: 0, deltaY: 800}`
+### scroll parameters
+- `x`, `y`: scroll start coordinates (viewport coordinates)
+- `deltaX`, `deltaY`: scroll distance (positive = right/down)
+- Scroll a full page: `{x: 760, y: 400, deltaX: 0, deltaY: 800}`
 
 ### fullpage_screenshot
-- 截图保存至系统临时目录：`/tmp/fullpage_{timestamp}.jpg`
-- 使用 CDP `Page.captureScreenshot` + `captureBeyondViewport: true`
-- 适合长页面、文章、报告存档
+- Screenshot saved to the system temp directory: `/tmp/fullpage_{timestamp}.jpg`
+- Uses CDP `Page.captureScreenshot` + `captureBeyondViewport: true`
+- Suitable for archiving long pages, articles, and reports
 
-## 常用场景示例
+## Common Scenario Examples
 
 ```
-// 微信文章截图
+// WeChat article screenshot
 1. navigate "https://mp.weixin.qq.com/s/..."
 2. wait 3
 3. fullpage_screenshot
 
-// Google 搜索
+// Google search
 1. navigate "https://www.google.com"
-2. snapshot → 找搜索框 ref
-3. type {ref, text: "关键词"}
+2. snapshot → find the search box ref
+3. type {ref, text: "keyword"}
 4. press_key "Enter"
-5. snapshot → 读取结果
+5. snapshot → read the results
 
-// 登录表单
+// Login form
 1. navigate "https://example.com/login"
 2. snapshot
 3. type {ref: username_ref, text: "user@mail.com"}
 4. type {ref: password_ref, text: "password"}
 5. click {ref: submit_ref}
-6. snapshot → 验证登录状态
+6. snapshot → verify login status
 ```
 
-## 故障排查
+## Troubleshooting
 
-| 问题 | 原因 | 解决 |
-|------|------|------|
-| 工具不可用 | 扩展未连接 | 点击扩展图标 → Connect |
-| ref 无效 | 页面已变化 | 重新执行 snapshot |
-| 截图为空 | 页面未加载完 | 添加 wait 2-3s |
-| 超时 | 操作超过 10min | 拆分为多步执行 |
-| 端口占用 | 9009 被占用 | `lsof -i:9009` 检查 |
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| Tools unavailable | Extension not connected | Click the extension icon → Connect |
+| Invalid ref | Page has changed | Re-run snapshot |
+| Blank screenshot | Page not fully loaded | Add wait 2-3s |
+| Timeout | Operation exceeded 10min | Split into multiple steps |
+| Port in use | 9009 is occupied | Check with `lsof -i:9009` |
 
-## 文档
+## Documentation
 
-- `references/tools-reference.md` - 完整工具参数文档
-- `references/workflows.md` - 高级工作流示例
+- `references/tools-reference.md` - Full tool parameter reference
+- `references/workflows.md` - Advanced workflow examples

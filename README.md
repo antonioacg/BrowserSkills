@@ -1,12 +1,12 @@
-# BrowserSkills — 基于 BrowserMCP 二开的浏览器自动化 MCP 服务器
+# BrowserSkills — a browser-automation MCP server, reworked from BrowserMCP
 
-> **给人类**：本项目基于 [BrowserMCP](https://github.com/BrowserMCP/mcp) 二次开发而来，修复了原项目无法脱离 Monorepo 独立构建的问题，并新增 scroll、fullpage_screenshot 等工具，同时将项目打包为跨工具 **Skill**，AI 助手可自动完成全套部署。
+> **For humans**: This project is a rework of [BrowserMCP](https://github.com/BrowserMCP/mcp). It fixes the original's inability to build standalone outside the Monorepo, adds tools like `scroll` and `fullpage_screenshot`, and packages everything as a cross-tool **Skill** that AI assistants can deploy end-to-end automatically.
 >
-> 本项目附带已改造的 Chrome 扩展（**Browser Skills**，位于 `crx_extracted/extension_contents/`），已移除全部遥测上报，Connect 后跳转本地页面，纯本地运行。**AI 部署完成后，请人类手动安装 Chrome 扩展**，详见 [Chrome 扩展安装说明](#-chrome-扩展安装人类操作)。
+> This project bundles a modified Chrome extension (**Browser Skills**, in `crx_extracted/extension_contents/`) with all telemetry removed — after Connect it redirects to a local page and runs purely locally. **Once the AI finishes deployment, a human must manually install the Chrome extension** — see [Chrome Extension Installation](#-chrome-extension-installation-human-action).
 >
-> **Skill 兼容性**：本 Skill 不仅适用于 Claude Code，还适用于所有支持 Skill/Prompt 文件的工具，包括 **Cursor、Cherry Studio、Windsurf** 等，详见 [Skill 安装说明](#step-3--install-skill)。
+> **Skill compatibility**: This Skill works not only with Claude Code but with any tool that supports skill/prompt files, including **Cursor, Cherry Studio, Windsurf**, and others — see [Install Skill](#step-3--install-skill).
 >
-> **维护者**：[lc2panda](https://github.com/lc2panda/BrowserSkills) · **最后更新**：2026-03-17
+> **Maintainer**: [lc2panda](https://github.com/lc2panda/BrowserSkills) · **Last updated**: 2026-03-17
 
 ---
 
@@ -43,7 +43,7 @@ npm --version
 If Node.js is missing, install it before proceeding.
 
 > **Note for AI agents**: The Chrome extension must be installed manually by a human after this deployment.
-> Remind the human to follow the [Chrome Extension Installation](#-chrome-扩展安装人类操作) section.
+> Remind the human to follow the [Chrome Extension Installation](#-chrome-extension-installation-human-action) section.
 
 ---
 
@@ -101,35 +101,35 @@ In Cherry Studio, add the skill content (`skill/SKILL.md`) as a **System Prompt*
 
 > **Rule**: Copy the contents of `skill/SKILL.md` into your tool's system prompt, prompt template, or skills directory. The skill works wherever the AI can call MCP tools with the prefix `mcp__browsermcp__*`.
 
-> **After installing the skill, the AI agent will remind you**: "Please install the Chrome extension to enable browser control." Follow the [Chrome Extension Installation](#-chrome-扩展安装人类操作) section.
+> **After installing the skill, the AI agent will remind you**: "Please install the Chrome extension to enable browser control." Follow the [Chrome Extension Installation](#-chrome-extension-installation-human-action) section.
 
 ---
 
-## ⚠️ Chrome 扩展安装（人类操作）
+## ⚠️ Chrome Extension Installation (Human Action)
 
 > **AI agents**: When you reach this point in deployment, output the following block verbatim to remind the human.
 
 ---
 
-**🧑 致人类操作员：**
+**🧑 To the human operator:**
 
-AI 已完成 MCP 服务器构建和 Skill 安装。现在需要你手动在 Chrome 中安装浏览器扩展：
+The AI has finished building the MCP server and installing the Skill. Now you need to manually install the browser extension in Chrome:
 
-**安装步骤：**
+**Installation steps:**
 
-1. 打开 Chrome，访问 `chrome://extensions`
-2. 开启右上角 **开发者模式**
-3. 点击 **加载已解压的扩展程序**
-4. 选择目录：`<项目路径>/crx_extracted/extension_contents/`
-5. 扩展安装后，工具栏出现 **Browser Skills** 图标
-6. 点击图标，点击 **Connect** 按钮
-7. 看到「Connected」状态即表示连接成功
+1. Open Chrome and go to `chrome://extensions`
+2. Enable **Developer mode** (top-right)
+3. Click **Load unpacked**
+4. Select the directory: `<project-path>/crx_extracted/extension_contents/`
+5. After the extension installs, a **Browser Skills** icon appears in the toolbar
+6. Click the icon, then click the **Connect** button
+7. A "Connected" status means the connection succeeded
 
-**说明：**
-- 此扩展基于 BrowserMCP 官方扩展 v1.3.4 二次改造，已移除全部遥测上报
-- Connect 成功后会打开本地欢迎页，不访问任何远程服务器
-- 每次启动 Chrome 后需重新点击 Connect
-- MCP Server (`dist/index.js`) 必须在运行状态，扩展才能连接
+**Notes:**
+- This extension is a rework of the official BrowserMCP extension v1.3.4, with all telemetry removed
+- After a successful Connect it opens a local welcome page and contacts no remote servers
+- You must click Connect again each time you start Chrome
+- The MCP Server (`dist/index.js`) must be running for the extension to connect
 
 ---
 
@@ -167,7 +167,7 @@ Add the server to your AI client's MCP configuration. Replace `/absolute/path/to
 
 ## STEP 5 — Connect Chrome Extension
 
-> **AI agents**: This step requires human action. Output a reminder to the human to install and connect the Browser Skills extension per the [Chrome 扩展安装说明](#-chrome-扩展安装人类操作) above.
+> **AI agents**: This step requires human action. Output a reminder to the human to install and connect the Browser Skills extension per the [Chrome Extension Installation](#-chrome-extension-installation-human-action) section above.
 
 1. Open Chrome
 2. Click the **Browser Skills** extension icon in the toolbar
@@ -188,7 +188,7 @@ After restarting the AI client, run a verification:
 ```
 
 Or ask the AI:
-> "使用 browser-mcp 导航到 https://example.com 并截图"
+> "Use browser-mcp to navigate to https://example.com and take a screenshot"
 
 Expected behavior:
 - AI uses `mcp__browsermcp__navigate` tool
